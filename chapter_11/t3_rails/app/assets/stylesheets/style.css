@@ -1,0 +1,53 @@
+.navbar-brand {
+	padding: 0;
+}
+
+.jumbotron {
+	padding-top: 12px;
+	padding-bottom: 12px;
+}
+
+input.game-board {
+    position:absolute;
+    clip: rect(0,0,0,0);
+}
+
+label.game-board {
+    display:block;
+    width:120px;
+    height:120px;
+    padding:10px;
+    outline:1px solid #bbb;
+    background:white;
+    float:left;
+    line-height:1;
+    overflow:hidden;
+    margin-bottom: 0px;
+}
+
+label.game-board:nth-of-type(3n + 1) {
+    clear:left
+}
+
+p {
+    clear:both;
+    padding:10px 0;
+    font:150% sans-serif;
+}
+
+div.game-board
+{
+    width: 400px;
+    display: block;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.container {
+  padding-top: 60px;
+}
+
+h1 {
+  font-weight: bold;
+}

@@ -1,0 +1,30 @@
+<div class="jumbotron">
+  <h1 class="text-center">
+    T3 |> Tic Tac Toe in Elixir.
+  </h1>
+  
+  <div class="col-md-12 column">
+    <%= image_tag 'logo.png', width: '280px', class: 'center-block' %> 
+  </div>
+</div>
+<div class="row clearfix">
+  <div class="col-md-12 column text-center">
+    <h1>
+      Pick a side.
+    </h1>
+  </div>
+</div>
+<div class="row clearfix">
+  <div class="col-md-6 column">
+    <%= link_to (image_tag 'cross.png', width: '180px', class: 'center-block'), new_game_path %> 
+    <h3 class="text-center text-muted">
+      Create a Game.
+    </h3>
+  </div>
+  <div class="col-md-6 column">
+    <%= link_to (image_tag 'nought.png', width: '180px', class: 'center-block'), games_path %> 
+    <h3 class="text-muted text-center">
+      Join a Game.
+    </h3>
+  </div>
+</div>

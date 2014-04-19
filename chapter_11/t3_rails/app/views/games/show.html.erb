@@ -1,0 +1,216 @@
+<div class="row clearfix">
+  <div class="col-md-12 column">
+    <form role="form">
+      <div class="form-group">
+          <label for="server">Websocket Server</label>
+          <span id="status" class="label label-success">Label</span>
+          <input type="text" class="form-control" id="server" value="ws://localhost:4000/ws/<%= params[:id] %>"/>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row clearfix">
+  <div class="col-md-12 column">
+    <div class="game-board">
+      <input type="checkbox" id="1" class="game-board"/>
+      <label for="1" class="game-board"></label>
+      <input type="checkbox" id="2" class="game-board"/>
+      <label for="2" class="game-board"></label>
+      <input type="checkbox" id="3" class="game-board"/>
+      <label for="3" class="game-board"></label>
+
+      <input type="checkbox" id="4" class="game-board"/>
+      <label for="4" class="game-board"></label>
+      <input type="checkbox" id="5" class="game-board"/>
+      <label for="5" class="game-board"></label>
+      <input type="checkbox" id="6" class="game-board"/>
+      <label for="6" class="game-board"></label>
+
+      <input type="checkbox" id="7" class="game-board"/>
+      <label for="7" class="game-board"></label>
+      <input type="checkbox" id="8" class="game-board"/>
+      <label for="8" class="game-board"></label>
+      <input type="checkbox" id="9" class="game-board"/>
+      <label for="9" class="game-board"></label>
+    </div>
+  </div>
+</div>
+
+<h2 class="text-center" id="outcome"></h2>
+
+<div class="row clearfix">
+  <div class="col-md-12 column">
+    <div class="form-group">
+      <label for="messages">Websocket Messages</label>
+      <textarea class="form-control" rows="10" id="messages">
+      </textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+
+var websocket;
+$(document).ready(init);
+
+function cross() {
+		return '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"' +              'width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">' +
+						'<g id="Captions">' +
+						'</g>' + 
+						'<g id="Your_Icon">' + 
+						'<path fill="#000000" d="M66.026,48.998l29.799-29.8c1.567-1.563,1.567-4.107,0-5.675L84.475,2.173' +      
+									'c-1.567-1.567-4.107-1.567-5.676,0L49,31.972L19.201,2.173c-1.568-1.567-4.107-1.563-5.676,0L2.175,13.527' +   
+									'c-1.567,1.567-1.567,4.107,0,5.675l29.8,29.8l-29.8,29.795c-1.567,1.568-1.567,4.111,0,5.68l11.351,11.351' +  
+									'c1.568,1.567,4.107,1.563,5.676,0L49,66.027l29.799,29.8c1.568,1.567,4.108,1.567,5.676,0l11.351-11.354' +
+									'c1.567-1.564,1.567-4.107,0-5.676L66.026,48.998z"/>'
+						'</g>' +
+						'</svg>';
+}
+
+function nought() {
+		return '<svg version="1.1" id="svg2" inkscape:version="0.48.3.1 r9886" sodipodi:docname="circle1.svg"' + 
+						'xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"' +
+						'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#"' +
+						'xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"' +
+						'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="100px"' +
+						'viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">' +
+						'<path id="path2985" d="M50,0C22.386,0,0,22.386,0,50s22.386,50,50,50s50-22.386,50-50S77.614,0,50,0z M50,14.156' +
+						'c19.799,0,35.844,16.044,35.844,35.844c0,19.799-16.045,35.844-35.844,35.844c-19.799,0-35.844-16.045-35.844-35.844' +
+						'C14.156,30.201,30.201,14.156,50,14.156z"/>' +
+						'</svg>';
+}
+
+function drawBoard(boardCells) {
+  for (var i = 0; i < boardCells.length; i++) {
+    var label = $("label[for='" + (i+1) + "']");
+
+    if (boardCells[i] === "x") {
+      label.html(cross());    
+    } 
+    else if (boardCells[i] === "o") {
+      label.html(nought());
+    } 
+    else {
+      label.html("");
+    }
+  }
+}
+
+function init() {
+  if(!("WebSocket" in window)) {  
+    $('#status').addClass("label-danger").text("Websockets UNSUPPORTED");
+  } else {
+    $('#status').addClass("label-error").text("Websockets SUPPORTED");
+    connect();
+  };
+};
+
+function connect() {
+    wsHost = $("#server").val()
+    websocket = new WebSocket(wsHost);
+    showMessage('Connecting to: ' +  wsHost); 
+    websocket.onopen = function(evt) { onOpen(evt) }; 
+    websocket.onclose = function(evt) { onClose(evt) }; 
+    websocket.onmessage = function(evt) { onMessage(evt) }; 
+    websocket.onerror = function(evt) { onError(evt) }; 
+};  
+
+function disconnect() {
+  websocket.close();
+} 
+
+function markBoard(gameId, side, playerId, pos) {
+  if(websocket.readyState == websocket.OPEN){
+      data = JSON.stringify({
+        game_id: gameId,
+        side: side, 
+        player_id: playerId,
+        pos: pos
+      }); 
+
+      websocket.send(data);
+
+      showMessage('sending: ' + data); 
+  } else {
+      showMessage('websocket is not connected'); 
+  };
+};
+
+function onOpen(evt) { 
+  showMessage('********** CONNECTED **********'); 
+  $("#connected").fadeIn('slow');
+  $("#content").fadeIn('slow');
+};  
+
+function onClose(evt) { 
+  showMessage(' ********** DISCONNECTED **********');
+}  
+
+function onMessage(evt) { 
+  showMessage('RESPONSE: ' + evt.data); 
+  try {
+    json    = JSON.parse(evt.data);
+    message = json["message"];
+    data    = json["data"];
+    board   = data["board"];
+    outcome = data["outcome"];
+    next    = data["next"];
+    showOutcome(outcome, next);
+    drawBoard(board);
+  } catch(e) {
+    console.log(e);
+  }
+}  
+
+function onError(evt) {
+  showMessage('ERROR: ' + evt.data);
+}
+
+function showMessage(txt) { 
+  el = $('textarea#messages');
+  el.val(txt + "\n" + el.val());
+}
+
+function showOutcome(outcome, next) {
+  switch (outcome) {
+    case "empty":
+      $("#outcome").html("Waiting for Player O ...");
+      break;
+    case "in_progress":
+      switch (next) {
+        case "x":
+          $("#outcome").html("Player X's turn.");
+          break;
+        case "o":
+          $("#outcome").html("Player O's turn.");
+          break;
+      }
+      if (next === "x") {
+      } else if (next === "o") {
+
+      }
+      break;
+    case "x_win":
+      $("#outcome").html("Player X Wins!");
+      break;
+    case "o_win":
+      $("#outcome").html("Player O Wins!");
+      break;
+    case "draw":
+      $("#outcome").html("Draw!");
+      break;
+    case "game_full":
+      $("#outcome").html("Game full!");
+      break;
+  }
+}
+
+$("input.game-board").click(function() {
+  gameId   = "<%= params[:id] %>";
+  playerId = "<%= current_user.id %>";
+  side     = "<%= session[:side] %>";
+  pos      = $(this).attr("id") + '';
+  markBoard(gameId, side, playerId, pos); 
+});
+</script>

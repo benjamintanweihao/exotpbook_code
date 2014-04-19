@@ -1,0 +1,12 @@
+<div class="col-md-4 column">
+  <h5 class="text-center text-muted">
+    <%= game["game_id"] %> 
+  </h5>
+  <%= image_tag identicon_link(game["game_id"]), width: '180px', class: 'center-block' %> 
+  <br/>
+  <div class="text-center">
+    <p>
+      <%= link_to 'Join', game_join_path(game["game_id"]), class: 'btn btn-success btn-lg' %>
+    </p>
+  </div>
+</div>

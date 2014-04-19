@@ -1,0 +1,9 @@
+<h1 class="text-center">
+  Listing Games
+</h1>
+
+<div class="row clearfix">
+  <% @games.each do |game| %>
+    <%= render 'game', game: game %>
+  <% end %>
+</div>
