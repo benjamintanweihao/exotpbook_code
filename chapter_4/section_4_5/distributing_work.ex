@@ -6,15 +6,15 @@ defmodule DistributingWork do
   def process_work(work, active, passive, results) 
     when work == [] or passive == [] do
     receive do
-      { worker, result } ->
-        process_work(work, List.delete(active, worker), [worker | passive], 
+      { worker_pid, result } ->
+        process_work(work, List.delete(active, worker_pid), [worker_pid | passive], 
                      [result | results])
     end
   end
 
-  def process_work([{m,n}|rest], active, [worker | passive], results) do
-    worker |> send({ self, {m, n} })
-    process_work(rest, [worker | active], passive, results)
+  def process_work([{m,n}|rest], active, [worker_pid | passive], results) do
+    worker_pid |> send({ self, {m, n} })
+    process_work(rest, [worker_pid | active], passive, results)
   end
 
   def worker do
