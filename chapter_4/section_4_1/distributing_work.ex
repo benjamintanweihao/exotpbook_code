@@ -3,18 +3,18 @@ defmodule DistributingWork do
     IO.puts inspect(results, char_lists: :as_lists)
   end
 
-  def process_work(work, active, passive, results) 
-    when work == [] or passive == [] do
+  def process_work(work, active, idle, results) 
+    when work == [] or idle == [] do
     receive do
       { worker_pid, result } ->
-        process_work(work, List.delete(active, worker_pid), [worker_pid | passive], 
+        process_work(work, List.delete(active, worker_pid), [worker_pid | idle], 
                      [result | results])
     end
   end
 
-  def process_work([{m,n}|rest], active, [worker_pid | passive], results) do
+  def process_work([{m,n}|rest], active, [worker_pid | idle], results) do
     worker_pid |> send({ self, {m, n} })
-    process_work(rest, [worker_pid | active], passive, results)
+    process_work(rest, [worker_pid | active], idle, results)
   end
 
   def worker do
@@ -38,4 +38,3 @@ defmodule DistributingWork do
   end
 
 end
-
