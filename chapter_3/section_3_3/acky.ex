@@ -6,7 +6,7 @@ defmodule Ackermann do
   def worker do
     receive do
       { from, {m, n} } ->
-        from |> send(ackermann(m, n))
+        send(from, ackermann(m, n))
       _ ->
         IO.puts "Didn't expect this!"
     end
