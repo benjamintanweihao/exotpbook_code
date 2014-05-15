@@ -40,7 +40,7 @@ defmodule Acky.Server do
         response = result
       :error ->
         response = ackermann(m, n)
-        cache = cache |> HashDict.put({m,n}, response)
+        cache = HashDict.put(cache, {m,n}, response)
     end
     {:reply, response, cache}
   end
